@@ -1,0 +1,33 @@
+{
+  "name": "github-contributors",
+  "version": "1.0.0",
+  "description": "Analyze and archive GitHub repo contributors",
+  "main": "contributors.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gitcommitshow/github-contributors.git"
+  },
+  "keywords": [
+    "opensource-analytics",
+    "github-contributions",
+    "opensource-analytics",
+    "opensource-management",
+    "community-management",
+    "community-recognition",
+    "recognition",
+    "contributors",
+    "contributions"
+  ],
+  "author": "gitcommitshow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gitcommitshow/github-contributors/issues"
+  },
+  "homepage": "https://github.com/gitcommitshow/github-contributors#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

@@ -5,10 +5,12 @@
 
 const https = require('https');
 
-//INPUTS
-const REPO_OWNER = "Git-Commit-Show";//Change this to the repo that you 
-const GITHUB_PERSONAL_TOKEN = "";//When used, it will increase the API limits from 60 to 5000/hr
-//End of inputs
+// INPUTS
+// Mandatory: Repo owner that you want to analyze
+const REPO_OWNER = process.env.REPO_OWNER;
+// Optional: Authentication using github token. When used, it will increase the API limits from 60 to 5000/hr
+const GITHUB_PERSONAL_TOKEN = process.env.GITHUB_PERSONAL_TOKEN;
+// END OF INPUTS
 
 const GITHUB_REQUEST_OPTIONS = {
     headers: {
