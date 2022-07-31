@@ -1,5 +1,5 @@
-# open-stats
-Statistics for open-source communities on GitHub
+# open-community-kit
+Tools and stats for open-source communities
 
 # Usage
 
