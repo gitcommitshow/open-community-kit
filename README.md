@@ -1,5 +1,5 @@
-# github-contributors
-Analyze and archive GitHub repo contributors
+# open-stats
+Statistics for open-source communities on GitHub
 
 # Usage
 
