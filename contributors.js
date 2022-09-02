@@ -3,12 +3,14 @@
  * @example To archive contributors leaderboard data in csv file, run `node contributors.js`
  */
 
+exports.archiveContributorsLeaderboard = archiveContributorsLeaderboard
+
 const https = require('https');
 
-// INPUTS
-// Mandatory: Repo owner that you want to analyze
+// Configurations (Optional)
+// Repo owner that you want to analyze
 const REPO_OWNER = process.env.REPO_OWNER;
-// Optional: Authentication using github token. When used, it will increase the API limits from 60 to 5000/hr
+// Authentication using github token. When used, it will increase the API limits from 60 to 5000/hr
 const GITHUB_PERSONAL_TOKEN = process.env.GITHUB_PERSONAL_TOKEN;
 // END OF INPUTS
 
@@ -25,12 +27,16 @@ if(GITHUB_PERSONAL_TOKEN){
 
 /**
  * Get all github repos of an owner(user/org)
- * @param {String} owner 
- * @param {Number} pageNo 
+ * @param {string} owner The organization or user name on GitHub
+ * @param {Object} options Additional options e.g. { pageNo: 1 }
  * @returns Promise<Array<Object> | String> JSON array of data on success, error on failure
  * @example getAllRepos('myorghandle').then((repos) => console.log(repos)).catch((err) => console.log(err))
  */
-async function getAllRepos(owner, pageNo = 1) {
+async function getAllRepos(owner=REPO_OWNER, options) {
+    let pageNo = (options && options.pageNo) ? options.pageNo : 1;
+    if(options && options.GITHUB_PERSONAL_TOKEN){
+        GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
+    }
     return new Promise((resolve, reject) => {
         let url = `https://api.github.com/orgs/${owner}/repos?per_page=100&page=${pageNo}`;
         console.log(url);
@@ -49,7 +55,7 @@ async function getAllRepos(owner, pageNo = 1) {
                     //It might have more data on the next page
                     pageNo++;
                     try {
-                        let dataFromNextPage = await getAllRepos(owner, pageNo);
+                        let dataFromNextPage = await getAllRepos(owner, { pageNo: pageNo } );
                         dataJsonArray.push(...dataFromNextPage);
                     } catch (err) {
                         console.log("No more pagination needed")
@@ -66,8 +72,8 @@ async function getAllRepos(owner, pageNo = 1) {
 
 /**
  * Get contributors for a Github repo
- * @param {*} fullRepoName e.g. myorghandle/myreponame
- * @param {*} pageNo 
+ * @param {string} fullRepoName e.g. myorghandle/myreponame
+ * @param {number} pageNo 
  * @returns Promise<Array<Object> | String>
  * @example getRepoContributors('myorghandle/myreponame').then((contributors) => console.log(contributors)).catch((err) => console.log(err))
  */
@@ -107,10 +113,11 @@ async function getRepoContributors(fullRepoName, pageNo = 1) {
 
 /**
  * Get all contributors across all the repos of an owner
- * @param {*} owner github user or org handle
+ * @param {string} owner github user or org handle
+ * @param {Object} options Additional options
  */
-async function getAllContributors(owner) {
-    let repos = await getAllRepos(owner);
+async function getAllContributors(owner=REPO_OWNER, options) {
+    let repos = await getAllRepos(owner, options);
     if (!repos || repos.length < 1) {
         console.log("Error in getting repos for " + owner)
         throw ("Error in getting repos for " + owner)
@@ -149,7 +156,7 @@ async function getAllContributors(owner) {
 
 /**
  * Adds up all the contributions by a contributor to different repos
- * @param {*} contributors 
+ * @param {Array} contributors 
  */
 function aggregateAllContributors(contributors) {
     return contributors.reduce(function (grouped, currentItem) {
@@ -185,6 +192,10 @@ function sortReposByContributionsCount(repoContributionMappingArray){
     })
 }
 
+/**
+ * Writes all contributors data to a file
+ * @param {Array} contributors 
+ */
 function writeContributorLeaderboardToFile(contributors) {
     const fs = require('fs');
     let ghContributorLeaderboard = contributors.map((contributor) => {
@@ -201,10 +212,11 @@ function writeContributorLeaderboardToFile(contributors) {
 
 /**
  * Archives contributors leaderboard data sorted by contrbutions in a file
- * @param {*} owner 
+ * @param {string} owner The organization or user name on GitHub
+ * @param {Object} options Additional options
  */
-async function archiveContributorsLeaderboard(owner) {
-    let contributors = await getAllContributors();
+async function archiveContributorsLeaderboard(owner=REPO_OWNER, options) {
+    let contributors = await getAllContributors(owner, options);
     if (!contributors || contributors.length < 1) {
         console.log("Failed to get contributors for "+owner);
         return;
@@ -219,5 +231,3 @@ async function archiveContributorsLeaderboard(owner) {
 
     return ghHandles;
 }
-
-archiveContributorsLeaderboard(REPO_OWNER)
