@@ -10,6 +10,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  APERTURE_SERVICE_ADDRESS: ${{ secrets.APERTURE_SERVICE_ADDRESS }}
+  APERTURE_API_KEY: ${{ secrets.APERTURE_API_KEY }}
+
 jobs:
   build:
 
