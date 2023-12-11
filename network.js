@@ -92,7 +92,7 @@ export async function makeRequest(method, url, options) {
  * }
  * */
 export async function makeRequestWithRateLimit(method, url, requestOptions){
-    const flow = await apertureClient.startFlow("external-api-request", {
+    const flow = await getApertureClient().startFlow("external-api-request", {
       labels: {
         url: url,
       },
