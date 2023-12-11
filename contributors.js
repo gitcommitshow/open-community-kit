@@ -4,6 +4,8 @@
  */
 
 exports.archiveContributorsLeaderboard = archiveContributorsLeaderboard
+exports.getAllContributors = getAllContributors;
+exports.getRepoContributors = getRepoContributors;
 
 const https = require('https');
 
@@ -73,7 +75,7 @@ async function getAllRepos(owner=REPO_OWNER, options) {
 /**
  * Get contributors for a Github repo
  * @param {string} fullRepoName e.g. myorghandle/myreponame
- * @param {number} pageNo 
+ * @param {number} pageNo
  * @returns Promise<Array<Object> | String>
  * @example getRepoContributors('myorghandle/myreponame').then((contributors) => console.log(contributors)).catch((err) => console.log(err))
  */
