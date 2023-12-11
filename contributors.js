@@ -3,14 +3,10 @@
  * @example To archive contributors leaderboard data in csv file, run `node contributors.js`
  */
 
-exports.archiveContributorsLeaderboard = archiveContributorsLeaderboard;
-exports.getAllRepos = getAllRepos;
-exports.getAllContributors = getAllContributors;
-exports.getRepoContributors = getRepoContributors;
+import * as path from 'path';
+import * as fs from 'fs';
 
-const path = require('path');
-
-const { makeRequestWithRateLimit } = require('./network.js');
+import { makeRequest, makeRequestWithRateLimit } from './network.js';
 
 // Configurations (Optional)
 // Repo owner that you want to analyze
@@ -37,7 +33,7 @@ if(GITHUB_PERSONAL_TOKEN){
  * @returns Promise<Array<Object> | String> JSON array of data on success, error on failure
  * @example getAllRepos('myorghandle').then((repos) => console.log(repos)).catch((err) => console.log(err))
  */
-async function getAllRepos(owner=REPO_OWNER, options) {
+export async function getAllRepos(owner=REPO_OWNER, options) {
     let pageNo = (options && options.pageNo) ? options.pageNo : 1;
     if(options && options.GITHUB_PERSONAL_TOKEN){
         GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
@@ -68,7 +64,7 @@ async function getAllRepos(owner=REPO_OWNER, options) {
  * @returns Promise<Array<Object> | String>
  * @example getRepoContributors('myorghandle/myreponame').then((contributors) => console.log(contributors)).catch((err) => console.log(err))
  */
-async function getRepoContributors(fullRepoName, pageNo = 1) {
+export async function getRepoContributors(fullRepoName, pageNo = 1) {
     let url = `https://api.github.com/repos/${fullRepoName}/contributors?per_page=100&page=${pageNo}`;
     console.log(url);
     const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
@@ -93,7 +89,7 @@ async function getRepoContributors(fullRepoName, pageNo = 1) {
  * @param {string} owner github user or org handle
  * @param {Object} options Additional options
  */
-async function getAllContributors(owner=REPO_OWNER, options) {
+export async function getAllContributors(owner=REPO_OWNER, options) {
     let repos = await getAllRepos(owner, options);
     if (!repos || repos.length < 1) {
         console.log("Error in getting repos for " + owner)
@@ -182,7 +178,6 @@ function writeContributorLeaderboardToFile(contributors, options={}) {
     }
     const ARCHIVE_FOLDER = options.archiveFolder || process.cwd();
     const ARCHIVE_FULL_PATH = path.join(ARCHIVE_FOLDER, options.archiveFileName || 'archive-gh-contributors-leaderboard.csv');
-    const fs = require('fs');
     let ghContributorLeaderboard = contributors.map((contributor) => {
         return ["@" + contributor.login, contributor.contributions, contributor.html_url, contributor.avatar_url, contributor.topContributedRepo, contributor.allContributedRepos].join();
     }).join("\n");
@@ -200,7 +195,7 @@ function writeContributorLeaderboardToFile(contributors, options={}) {
  * @param {string} owner The organization or user name on GitHub
  * @param {Object} options Additional options
  */
-async function archiveContributorsLeaderboard(owner=REPO_OWNER, options) {
+export async function archiveContributorsLeaderboard(owner=REPO_OWNER, options) {
     let contributors = await getAllContributors(owner, options);
     if (!contributors || contributors.length < 1) {
         console.log("Failed to get contributors for "+owner);

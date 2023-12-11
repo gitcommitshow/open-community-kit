@@ -1,8 +1,6 @@
-const https = require('https');
-const { ApertureClient } = require("@fluxninja/aperture-js");
+import * as https from 'https';
+import { ApertureClient } from "@fluxninja/aperture-js";
 
-exports.makeRequest = makeRequest;
-exports.makeRequestWithRateLimit = makeRequestWithRateLimit;
 
 var apertureClient;
 
@@ -39,7 +37,7 @@ function getApertureClient(){
  *   }
  * }
  * */
-async function makeRequest(method, url, requestOptions) {
+export async function makeRequest(method, url, options) {
     return new Promise((resolve, reject) => {
         // Ensure options is an object and set the method
         requestOptions = typeof requestOptions === 'object' ? requestOptions : {};
@@ -93,7 +91,7 @@ async function makeRequest(method, url, requestOptions) {
  *   }
  * }
  * */
-async function makeRequestWithRateLimit(method, url, requestOptions){
+export async function makeRequestWithRateLimit(method, url, requestOptions){
     const flow = await apertureClient.startFlow("external-api-request", {
       labels: {
         url: url,

@@ -1,7 +1,7 @@
 # open-community-kit
 Tools and stats for open-source communities
 
-![test](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml/badge.svg)
+[![test](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml/badge.svg)](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml)
 
 # Installation
 
@@ -39,10 +39,13 @@ ock yourGitHubOrgName yourGitHubPersonalToken
 ### Using code
 
 ```javascript
-const OCK = require('open-community-kit').OCK;
-OCK.contributors.github.archive('your_github_org_or_username', 
-    { GITHUB_PERSONAL_TOKEN: 'your_gh_personal_token_optional'
-});
+import OCK from 'open-community-kit';
+OCK.contributors.github.archive(
+    'your_github_org_or_username', 
+    { 
+        GITHUB_PERSONAL_TOKEN: 'your_gh_personal_token_optional'
+    }
+);
 ```
 
 ## Settings for repeated usage

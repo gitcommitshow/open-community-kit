@@ -3,6 +3,7 @@
   "version": "1.1.1",
   "description": "Tools and stats for open-source communities",
   "main": "contributors.js",
+  "type": "module",
   "bin": {
     "ock": "cli.js",
     "open-community-kit": "cli.js"

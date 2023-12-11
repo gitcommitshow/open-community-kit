@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const OCK = require('./index').OCK;
+import OCK from './index.js';
 
 let mainCommand = process.argv[1];
 console.log("Running "+mainCommand+"...");

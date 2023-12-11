@@ -1,7 +1,7 @@
-const { expect, assert } = require("chai");
-const contributorsLib = require("../contributors.js");
+import { expect, assert } from "chai";
+import * as contributorsLib from "../contributors.js";
 
-const contributorsFixture = require('./fixtures/contributors.fixture.js');
+import * as contributorsFixture from './fixtures/contributors.fixture.js';
 
 describe('contibutors.js', function() {
 
