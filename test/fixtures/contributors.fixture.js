@@ -1,7 +1,8 @@
 exports.VALID_REPO_OWNER = "Git-Commit-Show";
 exports.VALID_REPO = "Git-Commit-Show/landing-page";
-exports.REPO_CONTRIBUTOR_COUNT = 10;
-exports.ALL_REPO_CONTRIBUTOR_COUNT = 49;
+exports.REPO_COUNT_MIN = 10;
+exports.REPO_CONTRIBUTOR_COUNT_MIN = 10;
+exports.ALL_REPO_CONTRIBUTOR_COUNT_MIN = 49;
 exports.VALID_CONTRIBUTOR_SAMPLE = {
     login: "thenerdsuperuser",
     id: 11832723,

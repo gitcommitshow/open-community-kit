@@ -3,12 +3,14 @@
  * @example To archive contributors leaderboard data in csv file, run `node contributors.js`
  */
 
-exports.archiveContributorsLeaderboard = archiveContributorsLeaderboard
+exports.archiveContributorsLeaderboard = archiveContributorsLeaderboard;
+exports.getAllRepos = getAllRepos;
 exports.getAllContributors = getAllContributors;
 exports.getRepoContributors = getRepoContributors;
 
-const https = require('https');
 const path = require('path');
+
+const { makeRequest } = require('./network.js');
 
 // Configurations (Optional)
 // Repo owner that you want to analyze
@@ -40,37 +42,23 @@ async function getAllRepos(owner=REPO_OWNER, options) {
     if(options && options.GITHUB_PERSONAL_TOKEN){
         GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
     }
-    return new Promise((resolve, reject) => {
-        let url = `https://api.github.com/orgs/${owner}/repos?per_page=100&page=${pageNo}`;
-        console.log(url);
-        https.get(url, GITHUB_REQUEST_OPTIONS, (res) => {
-            console.log('statusCode:', res.statusCode);
-            // console.log('headers:', res.headers);
-            let data = '';
-            res.on('data', (d) => {
-                data += d;
-            })
-            res.on('end', async () => {
-                console.log("Repo list request finished")
-                // console.log(data)
-                let dataJsonArray = JSON.parse(data);
-                if (dataJsonArray.length == 100) {
-                    //It might have more data on the next page
-                    pageNo++;
-                    try {
-                        let dataFromNextPage = await getAllRepos(owner, { pageNo: pageNo } );
-                        dataJsonArray.push(...dataFromNextPage);
-                    } catch (err) {
-                        console.log("No more pagination needed")
-                    }
-                }
-                resolve(dataJsonArray);
-            })
-        }).on('error', (e) => {
-            console.error(e);
-            reject(e)
-        });
-    })
+    let url = `https://api.github.com/orgs/${owner}/repos?per_page=100&page=${pageNo}`;
+    const { res, data } = await makeRequest('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    console.log("Repo list request finished");
+    console.log('HTTP status: ', res.statusCode);
+    // console.log(data)
+    let dataJsonArray = JSON.parse(data);
+    if (dataJsonArray.length == 100) {
+        //It might have more data on the next page
+        pageNo++;
+        try {
+            let dataFromNextPage = await getAllRepos(owner, { pageNo: pageNo } );
+            dataJsonArray.push(...dataFromNextPage);
+        } catch (err) {
+            console.log("No more pagination needed")
+        }
+    }
+    return dataJsonArray;
 }
 
 /**
@@ -81,37 +69,23 @@ async function getAllRepos(owner=REPO_OWNER, options) {
  * @example getRepoContributors('myorghandle/myreponame').then((contributors) => console.log(contributors)).catch((err) => console.log(err))
  */
 async function getRepoContributors(fullRepoName, pageNo = 1) {
-    return new Promise((resolve, reject) => {
-        let url = `https://api.github.com/repos/${fullRepoName}/contributors?per_page=100&page=${pageNo}`;
-        console.log(url);
-        https.get(url, GITHUB_REQUEST_OPTIONS, (res) => {
-            console.log('statusCode:', res.statusCode);
-            // console.log('headers:', res.headers);
-            let data = '';
-            res.on('data', (d) => {
-                data += d;
-            })
-            res.on('end', async () => {
-                console.log("Contributors request finished for " + fullRepoName)
-                // console.log(data)
-                let dataJsonArray = JSON.parse(data);
-                if (dataJsonArray.length == 100) {
-                    //It might have more data on the next page
-                    pageNo++;
-                    try {
-                        let dataFromNextPage = await getRepoContributors(fullRepoName, pageNo);
-                        dataJsonArray.push(...dataFromNextPage);
-                    } catch (err) {
-                        console.log("No more pagination needed")
-                    }
-                }
-                resolve(dataJsonArray);
-            })
-        }).on('error', (e) => {
-            console.error(e);
-            reject(e)
-        });
-    })
+    let url = `https://api.github.com/repos/${fullRepoName}/contributors?per_page=100&page=${pageNo}`;
+    console.log(url);
+    const { res, data } = await makeRequest('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    console.log("Contributors request finished for " + fullRepoName)
+    // console.log(data)
+    let dataJsonArray = JSON.parse(data);
+    if (dataJsonArray.length == 100) {
+        //It might have more data on the next page
+        pageNo++;
+        try {
+            let dataFromNextPage = await getRepoContributors(fullRepoName, pageNo);
+            dataJsonArray.push(...dataFromNextPage);
+        } catch (err) {
+            console.log("No more pagination needed")
+        }
+    }
+    return dataJsonArray;
 }
 
 /**
