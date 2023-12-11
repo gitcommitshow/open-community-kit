@@ -8,6 +8,7 @@ exports.getAllContributors = getAllContributors;
 exports.getRepoContributors = getRepoContributors;
 
 const https = require('https');
+const path = require('path');
 
 // Configurations (Optional)
 // Repo owner that you want to analyze
@@ -196,15 +197,23 @@ function sortReposByContributionsCount(repoContributionMappingArray){
 
 /**
  * Writes all contributors data to a file
- * @param {Array} contributors 
+ * @param {Array} contributors List of contributors details with their contributions metrics
+ * @param {Object} options
+ * @param {string} options.archiveFolder where to save the final content
+ * @param {string} options.archiveFileName the name of the archive file, the content will be overwritten if it exists already
  */
-function writeContributorLeaderboardToFile(contributors) {
+function writeContributorLeaderboardToFile(contributors, options={}) {
+    if(!contributors || contributors.length<1){
+        return;
+    }
+    const ARCHIVE_FOLDER = options.archiveFolder || process.cwd();
+    const ARCHIVE_FULL_PATH = path.join(ARCHIVE_FOLDER, options.archiveFileName || 'archive-gh-contributors-leaderboard.csv');
     const fs = require('fs');
     let ghContributorLeaderboard = contributors.map((contributor) => {
         return ["@" + contributor.login, contributor.contributions, contributor.html_url, contributor.avatar_url, contributor.topContributedRepo, contributor.allContributedRepos].join();
     }).join("\n");
     ghContributorLeaderboard = "Github Username,Total Contributions,Profile,Avatar,Most Contribution To,Contributed To\n" + ghContributorLeaderboard;
-    fs.writeFile("./gh-contributors-leaderboard.csv", ghContributorLeaderboard, { flag: 'a+' }, function (err) {
+    fs.writeFile(ARCHIVE_FULL_PATH, ghContributorLeaderboard, { flag: 'a+' }, function (err) {
         if (err) {
             return console.log(err);
         }
