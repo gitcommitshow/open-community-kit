@@ -1,9 +1,9 @@
-exports.VALID_REPO_OWNER = "Git-Commit-Show";
-exports.VALID_REPO = "Git-Commit-Show/landing-page";
-exports.REPO_COUNT_MIN = 10;
-exports.REPO_CONTRIBUTOR_COUNT_MIN = 10;
-exports.ALL_REPO_CONTRIBUTOR_COUNT_MIN = 49;
-exports.VALID_CONTRIBUTOR_SAMPLE = {
+export const VALID_REPO_OWNER = "Git-Commit-Show";
+export const VALID_REPO = "Git-Commit-Show/landing-page";
+export const REPO_COUNT_MIN = 10;
+export const REPO_CONTRIBUTOR_COUNT_MIN = 10;
+export const ALL_REPO_CONTRIBUTOR_COUNT_MIN = 49;
+export const VALID_CONTRIBUTOR_SAMPLE = {
     login: "thenerdsuperuser",
     id: 11832723,
     node_id: "MDQ6VXNlcjExODMyNzIz",

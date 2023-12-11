@@ -1,4 +1,4 @@
-const contributorsLib = require('./contributors');
+import * as contributorsLib from './contributors.js';
 
 /**
  * Bundling all APIs together
@@ -15,4 +15,4 @@ const OCK = {
     }
 }
 
-exports.OCK = OCK;
+export default OCK

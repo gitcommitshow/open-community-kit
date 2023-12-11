@@ -1,8 +1,8 @@
-const { expect, assert } = require("chai");
+import { expect, assert } from "chai";
 
-const { OCK } = require("../index.js");
+import OCK from "../index.js";
 
-const contributorsFixture = require("./fixtures/contributors.fixture.js");
+import * as contributorsFixture from "./fixtures/contributors.fixture.js";
 
 describe('index.js', function() {
 
@@ -15,7 +15,7 @@ describe('index.js', function() {
           let contributorsHandlesArray = await OCK.contributors.github.archive(contributorsFixture.VALID_REPO_OWNER);
           assert.isNotNull(contributorsHandlesArray, "No contributors github handles returned");
           expect(contributorsHandlesArray).to.be.an('array');
-          expect(contributorsHandlesArray).to.have.lengthOf.at.least(contributorsFixture.ALL_REPO_CONTRIBUTOR_COUNT);
+          expect(contributorsHandlesArray).to.have.lengthOf.at.least(contributorsFixture.ALL_REPO_CONTRIBUTOR_COUNT_MIN);
         })
     })
 
