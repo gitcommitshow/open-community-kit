@@ -10,7 +10,7 @@ exports.getRepoContributors = getRepoContributors;
 
 const path = require('path');
 
-const { makeRequest } = require('./network.js');
+const { makeRequestWithRateLimit } = require('./network.js');
 
 // Configurations (Optional)
 // Repo owner that you want to analyze
@@ -43,7 +43,7 @@ async function getAllRepos(owner=REPO_OWNER, options) {
         GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
     }
     let url = `https://api.github.com/orgs/${owner}/repos?per_page=100&page=${pageNo}`;
-    const { res, data } = await makeRequest('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
     console.log("Repo list request finished");
     console.log('HTTP status: ', res.statusCode);
     // console.log(data)
@@ -71,7 +71,7 @@ async function getAllRepos(owner=REPO_OWNER, options) {
 async function getRepoContributors(fullRepoName, pageNo = 1) {
     let url = `https://api.github.com/repos/${fullRepoName}/contributors?per_page=100&page=${pageNo}`;
     console.log(url);
-    const { res, data } = await makeRequest('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
     console.log("Contributors request finished for " + fullRepoName)
     // console.log(data)
     let dataJsonArray = JSON.parse(data);
