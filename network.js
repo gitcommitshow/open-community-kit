@@ -1,6 +1,4 @@
-const https = require('https');
-
-exports.makeRequest = makeRequest;
+import * as https from 'https';
 
 /**
  * Sends an HTTPS request based on the specified method and options
@@ -23,7 +21,7 @@ exports.makeRequest = makeRequest;
  *   }
  * }
  * */
-async function makeRequest(method, url, options) {
+export async function makeRequest(method, url, options) {
     return new Promise((resolve, reject) => {
         // Ensure options is an object and set the method
         options = typeof options === 'object' ? options : {};
