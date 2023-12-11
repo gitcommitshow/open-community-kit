@@ -15,7 +15,7 @@ describe('index.js', function() {
           let contributorsHandlesString = await OCK.contributors.github.archive(contributorsFixture.VALID_REPO_OWNER);
           assert.isNotNull(contributorsHandlesString);
           expect(contributorsHandlesString).to.be.not.empty;
-          expect(str).to.include('@');
+          expect(contributorsHandlesString).to.include('@');
           // expect(str).to.include(',');
         })
     })

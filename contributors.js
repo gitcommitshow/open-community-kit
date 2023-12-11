@@ -200,7 +200,7 @@ function sortReposByContributionsCount(repoContributionMappingArray){
  * @param {Array} contributors List of contributors details with their contributions metrics
  * @param {Object} options
  * @param {string} options.archiveFolder where to save the final content
- * @param {string} options.archiveFileName the name of the archive file, the content will be overwritten if it exists already
+ * @param {string} options.archiveFileName the name of the archive file, the content will be appended if it exists already
  */
 function writeContributorLeaderboardToFile(contributors, options={}) {
     if(!contributors || contributors.length<1){
