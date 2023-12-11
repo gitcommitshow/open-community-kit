@@ -1,6 +1,8 @@
 # open-community-kit
 Tools and stats for open-source communities
 
+![test](https://github.com/Invide-Labs/invide-gpt/actions/workflows/test.yml/badge.svg)
+
 # Installation
 
 ```
