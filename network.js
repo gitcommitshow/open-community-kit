@@ -37,7 +37,7 @@ function getApertureClient(){
  *   }
  * }
  * */
-export async function makeRequest(method, url, options) {
+export async function makeRequest(method, url, requestOptions) {
     return new Promise((resolve, reject) => {
         // Ensure options is an object and set the method
         requestOptions = typeof requestOptions === 'object' ? requestOptions : {};
@@ -91,7 +91,7 @@ export async function makeRequest(method, url, options) {
  *   }
  * }
  * */
-export async function makeRequestWithRateLimit(method, url, requestOptions){
+export async function makeRequestWithRateLimit(method, url, options){
     const flow = await getApertureClient().startFlow("external-api-request", {
       labels: {
         url: url,
