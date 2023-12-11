@@ -9,9 +9,9 @@ const OCK = {
     contributors: {
         github: {
             archive: async function(owner, options){
-                contributorsLib.archiveContributorsLeaderboard(owner, options)
-            }
-        }
+                return contributorsLib.archiveContributorsLeaderboard(owner, options)
+            },
+        },
     }
 }
 
