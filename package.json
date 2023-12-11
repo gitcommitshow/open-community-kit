@@ -7,6 +7,9 @@
     "ock": "cli.js",
     "open-community-kit": "cli.js"
   },
+  "dependencies": {
+    "@fluxninja/aperture-js": "^2.5.0"
+  },
   "devDependencies": {
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
