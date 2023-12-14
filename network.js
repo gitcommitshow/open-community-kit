@@ -97,6 +97,9 @@ export async function makeRequestWithRateLimit(method, url, options){
     flow = await getApertureClient().startFlow("external-api", {
       labels: {
         url: url,
+        priority: 1,
+        tokens: 1,
+        workload: 'api.github'
       },
       grpcCallOptions: {
         deadline: Date.now() + 300, // ms
