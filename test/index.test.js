@@ -1,7 +1,7 @@
+import 'dotenv/config'
 import { expect, assert } from "chai";
 
 import OCK from "../index.js";
-
 import * as contributorsFixture from "./fixtures/contributors.fixture.js";
 
 describe('index.js', function() {

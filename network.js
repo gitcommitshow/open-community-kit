@@ -92,7 +92,9 @@ export async function makeRequest(method, url, requestOptions) {
  * }
  * */
 export async function makeRequestWithRateLimit(method, url, options){
-    const flow = await getApertureClient().startFlow("external-api-request", {
+  let flow;
+  try {
+    flow = await getApertureClient().startFlow("external-api", {
       labels: {
         url: url,
       },
@@ -100,19 +102,27 @@ export async function makeRequestWithRateLimit(method, url, options){
         deadline: Date.now() + 300, // ms
       },
     });
-  
-    if (flow.shouldRun()) {
+  } catch(err){
+    console.error("Aperture client for rate limiting is not setup correctly");
+    console.log("Make sure to setup set correct APERTURE_SERVICE_ADDRESS and APERTURE_API_KEY in environment variables");
+    console.log("Going to make request without rate limit");
+  } finally {
+    // Make request if allowed as per rate limit
+    // In case rate limiting is not setup properly, make request anyway
+    if (!flow || flow.shouldRun()) {
       // Add business logic to process incoming request
       console.log("Request accepted. Processing...");
       const {res, data} = await makeRequest(...arguments)
       return { res, data}
     } else {
       console.log("Request rate-limited. Try again later.");
-      // Handle flow rejection
-      flow.setStatus(FlowStatus.Error);
+      if(flow) {
+        // Handle flow rejection
+        flow.setStatus(FlowStatus.Error);
+      }
     }
-  
     if (flow) {
       flow.end();
     }
   }
+}
