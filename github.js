@@ -1,5 +1,5 @@
 /**
- * @file Functions to analyze and archive meaningful github contributors data
+ * @file Functions to analyze and archive meaningful github data such as contributors
  * @example To archive contributors leaderboard data in csv file, run `node contributors.js`
  */
 
@@ -210,4 +210,55 @@ export async function archiveContributorsLeaderboard(owner=REPO_OWNER, options) 
     writeContributorLeaderboardToFile(contributors);
 
     return ghHandles;
+}
+
+/**
+ * Search pull requests
+ * @param {string} query 
+ * @param {Object} options Additional options e.g. { pageNo: 1 }
+ */
+export async function searchPullRequests(query, options) {
+    let pageNo = (options && options.pageNo) ? options.pageNo : 1;
+    if(options && options.GITHUB_PERSONAL_TOKEN){
+        GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
+    }
+    let queryString = encodeURIComponent(''+query+'type:pr')
+    let url = `https://api.github.com/search/issues?q=${queryString}&per_page=100&page=${pageNo}&sort=${options.sort || 'created'}`;
+    const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    console.log("PR search request finished");
+    console.log('HTTP status: ', res.statusCode);
+    // console.log(data)
+    let searchResultObject = JSON.parse(data);
+    return searchResultObject;
+}
+
+/**
+ * Get all search results, not just one page
+ * @param {string} query 
+ * @param {Object} options
+ * @param {Object} options.maxResults limit maximum results
+ */
+export async function recursiveSearchPullRequests(query, options){
+    let prList = [];
+    let pageNo = 1;
+    let maxResults = options.maxResults || 10000;
+    let searchResultObject = await searchPullRequests(query, Object.assign({ pageNo: pageNo }, options));
+    // Iterate over results if there are more results expected by the user
+    if(!searchResultObject || !searchResultObject.items || !searchResultObject.items.length<1 || maxResults < 100){
+        return prList;
+    }
+    prList.push(searchResultObject.items);
+    let incomplete_results = searchResultObject.incomplete_results;
+    while(prList.length < searchResultObject.total_count && !incomplete_results){
+        pageNo++;
+        try {
+            let nextPageSearchResultObject = await searchPullRequests(query, { pageNo: pageNo } );
+            prList.push(...nextPageSearchResultObject.items);
+            incomplete_results = nextPageSearchResultObject.incomplete_results;
+        } catch (err) {
+            console.log("Some issue in recursive search for pull requests")
+        }
+    }
+    console.log("Found "+prList.length +" PRs"+" for "+query);
+    return prList;
 }
