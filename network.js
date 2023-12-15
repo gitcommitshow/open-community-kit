@@ -115,6 +115,8 @@ export async function makeRequestWithRateLimit(method, url, options){
     if (!flow || flow.shouldRun()) {
       // Add business logic to process incoming request
       console.log("Request accepted. Processing...");
+      // Wait for 500ms
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const {res, data} = await makeRequest(...arguments)
       return { res, data}
     } else {
