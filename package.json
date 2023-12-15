@@ -1,6 +1,6 @@
 {
   "name": "open-community-kit",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "description": "Tools and stats for open-source communities",
   "main": "contributors.js",
   "type": "module",
@@ -8,8 +8,12 @@
     "ock": "cli.js",
     "open-community-kit": "cli.js"
   },
+  "dependencies": {
+    "@fluxninja/aperture-js": "^2.5.0"
+  },
   "devDependencies": {
     "chai": "^4.3.10",
+    "dotenv": "^16.3.1",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "sinon": "^16.1.3"
