@@ -20,7 +20,7 @@ function getApertureClient(){
  * @param {string} method - The HTTP method to use (e.g., 'GET', 'POST').
  * @param {string} url - The URL to which the request is sent.
  * @param {Object} [requestOptions] - The options for the request. This includes headers, request body (for POST/PUT), etc.
- * @param {Object} [requestOptions.body] - The data that needs to be sent with the request, used for POST/PUT requests
+ * @param {Object} [requestOptions.data] - The data that needs to be sent with the request, used for POST/PUT requests
  * @param {Object} [requestOptions.headers] - The headers that needs to be sent with the request
  * @returns {Promise<{res: https.IncomingMessage, data: string}>} A Promise that resolves with the response object and the body data as a string.
  * @throws {Error} Throws an error if the request cannot be completed
@@ -74,7 +74,7 @@ export async function makeRequest(method, url, requestOptions) {
  * @param {string} url - The URL to which the request is sent.
  * @param {Object} [options] - The options for the request. This includes headers, request body (for POST/PUT), etc.
  * @param {Object} [options.rateLimitOptions] - Options related to rate limits
- * @param {Object} [options.body] - The data that needs to be sent with the request, used for POST/PUT requests
+ * @param {Object} [options.data] - The data that needs to be sent with the request, used for POST/PUT requests
  * @param {Object} [options.headers] - The headers that needs to be sent with the request
  * @returns {Promise<{res: https.IncomingMessage, data: string}>} A Promise that resolves with the response object and the body data as a string.
  * @throws {Error} Throws an error if the rate limit is exceeded or if an invalid argument is passed.
