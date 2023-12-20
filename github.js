@@ -1,12 +1,10 @@
 /**
- * @file Functions to analyze and archive meaningful github contributors data
+ * @file Functions to analyze and archive meaningful github data such as contributors
  * @example To archive contributors leaderboard data in csv file, run `node contributors.js`
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
-
 import { makeRequest, makeRequestWithRateLimit } from './network.js';
+import * as archive from './archive.js';
 
 // Configurations (Optional)
 // Repo owner that you want to analyze
@@ -24,6 +22,26 @@ const GITHUB_REQUEST_OPTIONS = {
 
 if(GITHUB_PERSONAL_TOKEN){
     GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+GITHUB_PERSONAL_TOKEN;
+}
+
+
+/**
+ * Get details of a Github repo
+ * @param {string} fullRepoNameOrUrl e.g. myorghandle/myreponame
+ * @param {number} pageNo
+ * @returns Promise<Array<Object> | String>
+ * @example getRepoDetail('myorghandle/myreponame').then((repoDetail) => console.log(repoDetail)).catch((err) => console.log(err))
+ */
+export async function getRepoDetail(fullRepoNameOrUrl, pageNo = 1) {
+    if(!fullRepoNameOrUrl) throw new Error("Invalid input")
+    let fullRepoName = fullRepoNameOrUrl.match(/github\.com(?:\/repos)?\/([^\/]+\/[^\/]+)/)?.[1] || fullRepoNameOrUrl;
+    let url = `https://api.github.com/repos/${fullRepoName}`;
+    console.log(url);
+    const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    console.log("Repo detail request finished for " + fullRepoName)
+    // console.log(data)
+    let dataJson = JSON.parse(data);
+    return dataJson;
 }
 
 /**
@@ -176,18 +194,12 @@ function writeContributorLeaderboardToFile(contributors, options={}) {
     if(!contributors || contributors.length<1){
         return;
     }
-    const ARCHIVE_FOLDER = options.archiveFolder || process.cwd();
-    const ARCHIVE_FULL_PATH = path.join(ARCHIVE_FOLDER, options.archiveFileName || 'archive-gh-contributors-leaderboard.csv');
+    // Prepare data
     let ghContributorLeaderboard = contributors.map((contributor) => {
         return ["@" + contributor.login, contributor.contributions, contributor.html_url, contributor.avatar_url, contributor.topContributedRepo, contributor.allContributedRepos].join();
     }).join("\n");
     ghContributorLeaderboard = "Github Username,Total Contributions,Profile,Avatar,Most Contribution To,Contributed To\n" + ghContributorLeaderboard;
-    fs.writeFile(ARCHIVE_FULL_PATH, ghContributorLeaderboard, { flag: 'a+' }, function (err) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("The file was saved!");
-    });
+    archive.writeToFile(ghContributorLeaderboard, Object.assign({ archiveFileName: 'archive-gh-contributors-leaderboard.csv' }, options));
 }
 
 /**
@@ -210,4 +222,100 @@ export async function archiveContributorsLeaderboard(owner=REPO_OWNER, options) 
     writeContributorLeaderboardToFile(contributors);
 
     return ghHandles;
+}
+
+/**
+ * Search pull requests
+ * @param {string} query 
+ * @param {Object} [options] Additional options
+ * @param {Object} [options.pageNo=1] Result page number
+ */
+export async function searchPullRequests(query, options) {
+    let pageNo = (options && options.pageNo) ? options.pageNo : 1;
+    if(options && options.GITHUB_PERSONAL_TOKEN){
+        GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
+    }
+    let queryString = encodeURIComponent((query || ''))+'+is:pull-request';
+    let url = `https://api.github.com/search/issues?q=${queryString}&per_page=100&page=${pageNo}&sort=${options.sort || 'created'}`;
+    const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
+    console.log("PR search request finished");
+    console.log('HTTP status: ', res.statusCode);
+    // console.log(data)
+    let searchResultObject = JSON.parse(data);
+    return searchResultObject;
+}
+
+/**
+ * Get all PRs matching query
+ * @param {string} query 
+ * @param {Object} [options]
+ * @param {Object} [options.maxResults=1000] limit maximum results
+ */
+export async function recursivelySearchPullRequests(query, options){
+    let searchRequestOptions = Object.assign({ pageNo: 1, maxResults: 1000 }, options)
+    let prList = [];
+    let searchResultObject = await searchPullRequests(query, searchRequestOptions);
+    // Iterate over results if there are more results expected by the user
+    if(!searchResultObject || !searchResultObject.items || searchResultObject.items.length<1){
+        return prList;
+    }
+    prList.push(...searchResultObject.items);
+    while(prList.length < searchRequestOptions.maxResults && prList.length < searchResultObject.total_count){
+        searchRequestOptions.pageNo++;
+        try {
+            let nextPageSearchResultObject = await searchPullRequests(query, searchRequestOptions);
+            prList.push(...nextPageSearchResultObject.items);
+        } catch (err) {
+            console.log("Some issue in recursive search for pull requests");
+            break;
+        }
+    }
+    console.log("Found "+prList.length +" PRs"+" for "+query);
+    return prList;
+}
+
+
+/**
+ * Aggregates all pull requests based on a specified field
+ * @param {Object[]} pullRequests - An array of pull request objects.
+ * @param {string} aggregatorField - The field name used to aggregate the pull requests. Defaults to "repository_url".
+ * @returns {Object[]} An array of objects, each containing a unique value of the aggregator field and an array of all pull requests that share that value.
+ */
+export function aggregateAllPullRequests(pullRequests, aggregatorField = "repository_url") {
+    return pullRequests.reduce((grouped, currentItem) => {
+        // Skipping the items without aggregatorField
+        if (!currentItem[aggregatorField]) {
+            return grouped;
+        }
+        // Find or create the group for the current item
+        let group = grouped.find(g => g[aggregatorField] === currentItem[aggregatorField]);
+        if (!group) {
+            group = { [aggregatorField]: currentItem[aggregatorField], pull_requests: [] };
+            grouped.push(group);
+        }
+        // Add the current item to the group
+        group.pull_requests.push(currentItem);
+        return grouped;
+    }, []);
+}
+
+/**
+ * Archives repos that PRs
+ * @param {string} owner The organization or user name on GitHub
+ * @param {Object} options Additional options
+ */
+export async function archiveReposWithMatchingPullRequests(query, options) {
+    let pullRequests = await recursivelySearchPullRequests(query, options);
+    if (!pullRequests || pullRequests.length < 1) {
+        console.log("Failed to get PRs for query: "+query);
+        return;
+    }
+    let repos = aggregateAllPullRequests(pullRequests, 'repository_url');
+    if(!repos) throw new Error("No repo found");
+    for(let repo of repos){
+        let repoDetail = await getRepoDetail(repo['repository_url']);
+        Object.assign(repo, repoDetail);
+    }
+    archive.save(repos, { archiveFileName: `repos-pr-${query}-${options.maxResults || 1000}-${archive.getFormattedDate()}.csv` });
+    return repos;
 }

@@ -1,4 +1,4 @@
-import * as contributorsLib from './contributors.js';
+import * as contributorsLib from './github.js';
 
 /**
  * Bundling all APIs together

@@ -2,7 +2,7 @@
   "name": "open-community-kit",
   "version": "1.2.1",
   "description": "Tools and stats for open-source communities",
-  "main": "contributors.js",
+  "main": "index.js",
   "type": "module",
   "bin": {
     "ock": "cli.js",
