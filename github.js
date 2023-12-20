@@ -235,7 +235,7 @@ export async function searchPullRequests(query, options) {
     if(options && options.GITHUB_PERSONAL_TOKEN){
         GITHUB_REQUEST_OPTIONS.headers["Authorization"] = "token "+options.GITHUB_PERSONAL_TOKEN;
     }
-    let queryString = encodeURIComponent(query || ''+'+type:pr');
+    let queryString = encodeURIComponent((query || ''))+'+is:pull-request';
     let url = `https://api.github.com/search/issues?q=${queryString}&per_page=100&page=${pageNo}&sort=${options.sort || 'created'}`;
     const { res, data } = await makeRequestWithRateLimit('GET', url, Object.assign({},GITHUB_REQUEST_OPTIONS));
     console.log("PR search request finished");
