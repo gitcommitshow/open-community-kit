@@ -1,6 +1,7 @@
 import * as https from 'https';
-import { ApertureClient } from "@fluxninja/aperture-js";
+import { ApertureClient, FlowStatus } from "@fluxninja/aperture-js";
 
+const MAX_RATE_LIMIT_WAIT_DURATION_MS = process.env.MAX_RATE_LIMIT_WAIT_DURATION_MS || 60000; // 10 mins
 
 var apertureClient;
 
@@ -47,7 +48,9 @@ export async function makeRequest(method, url, requestOptions) {
             // Handle HTTP response stream
             let data = '';
             res.on('data', chunk => data += chunk);
-            res.on('end', () => resolve({ res, data }));
+            res.on('end', function(){
+              resolve({ res, data })
+          });
         });
 
         req.on('error', error => {
@@ -92,17 +95,18 @@ export async function makeRequest(method, url, requestOptions) {
  * }
  * */
 export async function makeRequestWithRateLimit(method, url, options){
+  if(!method) method = "GET";
   let flow;
   try {
     flow = await getApertureClient().startFlow("external-api", {
       labels: {
         url: url,
         priority: 1,
-        tokens: 1,
+        tokens: ["POST", "PUT", "DELETE", "PATCH"].includes(method.toUpperCase()) ? 5 : 1,
         workload: 'api.github'
       },
       grpcCallOptions: {
-        deadline: Date.now() + 300, // ms
+        deadline: Date.now() + MAX_RATE_LIMIT_WAIT_DURATION_MS, // ms
       },
     });
   } catch(err){
@@ -116,7 +120,7 @@ export async function makeRequestWithRateLimit(method, url, options){
       // Add business logic to process incoming request
       console.log("Request accepted. Processing...");
       // Wait for 500ms
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       const {res, data} = await makeRequest(...arguments)
       return { res, data}
     } else {

@@ -2,3 +2,4 @@ REPO_OWNER="Git-Commit-Show"
 GITHUB_PERSONAL_TOKEN="ghp_adsfdsf32sdfasdfcdcsdfsdf23sfasdf1"
 APERTURE_SERVICE_ADDRESS="my.app.fluxninja.com:443"
 APERTURE_API_KEY="4dsfs323db7dsfsde310ca6dsdf12sfr4"
+MAX_RATE_LIMIT_WAIT_DURATION_MS=60000
