@@ -9,7 +9,7 @@ Tools and stats for open-source communities
 npm install -g open-community-kit
 ```
 
-You can use npx as well if you just want to test a CLI command
+You can use `npx` as well if you just want to test a CLI command
 
 # Usage
 
