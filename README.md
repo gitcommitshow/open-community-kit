@@ -1,4 +1,4 @@
-# open-community-kit
+# open-community-kit (ock)
 Tools and stats for open-source communities
 
 [![test](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml/badge.svg)](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml)
