@@ -3,7 +3,7 @@ Tools and stats for open-source communities
 
 [![test](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml/badge.svg)](https://github.com/gitcommitshow/open-community-kit/actions/workflows/test.yml)
 
-# Installation
+## Installation
 
 ```bash
 npm install -g open-community-kit
@@ -11,12 +11,15 @@ npm install -g open-community-kit
 
 You can use `npx` as well if you just want to test a CLI command
 
-# Usage
+----
 
-## Create a leaderboard of Github contributors for all the repos of a user/org
-(Contributor with highest # of contributions at the top)
+## Usage
 
-### Using CLI
+### Leaderboard - Github Contributors 
+
+For all the repos of a user/org. Contributor with highest # of contributions at the top.
+
+**Using CLI**
 
 Run `open-community-kit yourGithubOrgName` from your terminal
 
@@ -36,7 +39,7 @@ You will hit the API limits soon. **To increase API limits**, add [`GITHUB_PERSO
 ock yourGitHubOrgName yourGitHubPersonalToken
 ```
 
-### Using code
+**Using code**
 
 ```javascript
 import OCK from 'open-community-kit';
@@ -47,6 +50,8 @@ OCK.contributors.github.archive(
     }
 );
 ```
+
+----
 
 ## Settings for repeated usage
 
