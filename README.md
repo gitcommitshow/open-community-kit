@@ -30,7 +30,7 @@ ock yourGitHubOrgName
 ```
 
 This will
-* Fetch data from Github APIs and prepare a leaderboard of all the contributors to public repositories of your GitHub organization/user accout
+* Fetch data from Github APIs and prepare a leaderboard of all the contributors to public repositories of your GitHub organization/user account
 * Save the leaderboard in a csv file in the same folder
 
 You will hit the API limits soon. **To increase API limits**, add [`GITHUB_PERSONAL_TOKEN`](https://github.com/settings/tokens) as well in the arguments i.e.
