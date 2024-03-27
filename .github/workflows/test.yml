@@ -5,10 +5,12 @@ name: npm test
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    paths-ignore: 
+      - "**.md"
+      - "ENV_SAMPLE"
+      - "LICENSE"
 
 env:
   APERTURE_SERVICE_ADDRESS: ${{ secrets.APERTURE_SERVICE_ADDRESS }}
