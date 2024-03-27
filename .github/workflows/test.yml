@@ -8,9 +8,14 @@ on:
   pull_request:
     branches: [ "main" ]
     paths-ignore: 
-      - "**.md"
       - "ENV_SAMPLE"
       - "LICENSE"
+      - "**/*.md"
+      - ".vscode/**"
+      - ".gitignore"
+      - ".dockerignore"
+      - ".npmignore"
+      - "assets/**"
 
 env:
   APERTURE_SERVICE_ADDRESS: ${{ secrets.APERTURE_SERVICE_ADDRESS }}
