@@ -15,7 +15,7 @@ You can use `npx` as well if you just want to test a CLI command
 
 ## Usage
 
-### Leaderboard - Github Contributors 
+### Leaderboard - GitHub Contributors 
 
 For all the repos of a user/org. Contributor with highest # of contributions at the top.
 
